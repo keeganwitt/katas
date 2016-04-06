@@ -1,8 +1,0 @@
-1st attempt: double nested for loop with grid in boolean[][]
-2nd attempt: grid in boolean[][], but with a list of all cells that could change (live cells and their neighbors -- adding neighbors was slow)
-
-ForkJoin thresholds were tuned with
-    java -jar build\libs\gameOfLife-all.jar -i src\test\resources\guns\gunstar.cells -s 100000 -c -x 50 -y 50
-But obviously this is tuning to my workstation horsepower
-
-My goal was to be able to compute the next generation of around 1000 live cells on a 1 million cell grid in under a second after loading the file into memory.  I'm right around the 1 second mark with around 750 live cells on a 1 million cell grid on my machine.
