@@ -1,4 +1,6 @@
-This solution optimizes for large grids. The performance is affected only by the number of live cells. The size of the grid is irrellevant because only the live cells are stored. Also, since every sub-grid and cell can have it's next state computed independently of every other sub-grid and cell, Java 7's Fork-Join enabled great parallelization.
+This solution optimizes for large grids. The performance is affected only by the number of live cells.
+The size of the grid is irrellevant because only the live cells are stored.
+Also, since every sub-grid and cell can have it's next state computed independently of every other sub-grid and cell, Java 7's Fork-Join enabled great parallelization.
 
 
 Java 7 or higher is required. The input files are plaintext cells files (http://www.conwaylife.com/wiki/Plaintext).
