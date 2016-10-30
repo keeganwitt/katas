@@ -1,0 +1,6 @@
+# IDE files
+java/**/.idea/
+
+# Gradle files
+java/**/.gradle/
+java/**/build/
