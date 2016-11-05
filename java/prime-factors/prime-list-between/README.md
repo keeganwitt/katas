@@ -31,13 +31,13 @@ don't run by default.
 
 The ending numbers doesn't have to be larger than the beginning number (i.e. it can be the same number or smaller).
 
-    java -jar build/libs/prime-list-between-all.jar -g -n <beginning-number> -N <ending-number>
+    java -jar build/libs/prime-list-between-all.jar -g -b <beginning-number> -e <ending-number>
 
 ### Display usage
 
     java -jar build/libs/prime-list-between-all.jar -h
 
-## Design Notes
+## Design notes
 
 * The interface and wording of description seems to imply a deterministic rather than heuristic solution, so approaches
 like elliptic curve primality testing are out.

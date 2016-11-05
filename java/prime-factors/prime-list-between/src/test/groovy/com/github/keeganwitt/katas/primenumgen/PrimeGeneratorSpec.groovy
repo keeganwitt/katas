@@ -59,6 +59,7 @@ class PrimeGeneratorSpec extends Specification {
     def "generate(7900, 7920) returns 7901, 7907, and 7919"() {
         expect:
         subject.generate(7900, 7920) == [7901, 7907, 7919]
+        subject.generate(7920, 7900) == [7901, 7907, 7919]
     }
 
     def "generate(0, 1000) finds all primes under 1000"() {
