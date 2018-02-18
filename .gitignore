@@ -1,5 +1,8 @@
 # IntelliJ
 **/.idea/
+**/*.iml
+**/*.ipr
+**/*.iws
 **/out/
 
 # Gradle
@@ -8,6 +11,8 @@
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
 
+# SBT
+**/target/
 
 # MacOS
 *.DS_Store
