@@ -1,20 +1,21 @@
 import org.scalatest.FlatSpec
 
-class PencilSpec extends FlatSpec {
+import scala.collection.mutable
 
+class PencilSpec extends FlatSpec {
   "Pencil" should "return spaces after reaching dull point" in {
-    val pencil = new Pencil(initialSharpness=1000, dullPoint = 0, maxResharpenings = 0)
+    val pencil = new Pencil(maxSharpness=1500, dullPoint = 0, maxResharpenings = 0)
     assert(pencil.write("Here is some text") == "Here is          ")
   }
 
   "Pencil" should "not count whitespace towards wear" in {
-    val pencil = new Pencil(initialSharpness=1, dullPoint = 0, maxResharpenings = 0)
+    val pencil = new Pencil(maxSharpness=1, dullPoint = 0, maxResharpenings = 0)
     assert(pencil.write(" \t\r\n") == " \t\r\n")
-    assert(pencil.initialSharpness == 1)
+    assert(pencil.sharpness == 1)
   }
 
   "Pencil" should "continue writing past dull point if resharpened" in {
-    val pencil = new Pencil(initialSharpness=1000, dullPoint = 0, maxResharpenings = 2)
+    val pencil = new Pencil(maxSharpness=1500, dullPoint = 0, maxResharpenings = 2)
     assert(pencil.write("Here is") == "Here is")
     pencil.resharpen()
     assert(pencil.write("some t") == "some t")
@@ -23,7 +24,7 @@ class PencilSpec extends FlatSpec {
   }
 
   "Pencil" should "continue writing spaces if resharpened too many times" in {
-    val pencil = new Pencil(initialSharpness=1000, dullPoint = 0, maxResharpenings = 1)
+    val pencil = new Pencil(maxSharpness=1500, dullPoint = 0, maxResharpenings = 1)
     assert(pencil.write("Here is") == "Here is")
     pencil.resharpen()
     assert(pencil.write("some t") == "some t")
@@ -31,16 +32,15 @@ class PencilSpec extends FlatSpec {
     assert(pencil.write("   ") == "   ")
   }
 
-  "Pencil" should "throw an exception if unable to determine wear for a character" in {
-    assertThrows[IllegalArgumentException] {
-      val pencil = new Pencil()
-      pencil.write("象")
-    }
+  "Pencil" should "reduce sharpness for a non-ASCII character" in {
+    val pencil = new Pencil(maxSharpness=1000, dullPoint = 0)
+    assert(pencil.write("象") == "象")
+    assert(pencil.sharpness < 1000)
   }
 
-  "Pencil" should "throw an exception if initialSharpness is negative" in {
+  "Pencil" should "throw an exception if maxSharpness is negative" in {
     assertThrows[IllegalArgumentException] {
-      new Pencil(initialSharpness = -1)
+      new Pencil(maxSharpness = -1)
     }
   }
 
@@ -56,4 +56,38 @@ class PencilSpec extends FlatSpec {
     }
   }
 
+  "Pencil" should "throw an exception if sharpness is negative" in {
+    assertThrows[IllegalArgumentException] {
+      val pencil: Pencil = new Pencil()
+      pencil.sharpness = -1
+    }
+  }
+
+  "Pencil" should "throw an exception if timesResharpened is negative" in {
+    assertThrows[IllegalArgumentException] {
+      val pencil: Pencil = new Pencil()
+      pencil.timesResharpened = -1
+    }
+  }
+
+  "Pencil" should "throw an exception if sharpness is greater than max sharpness" in {
+    assertThrows[IllegalArgumentException] {
+      val pencil: Pencil = new Pencil(maxSharpness = 0)
+      pencil.sharpness = 1
+    }
+  }
+
+  "Pencil" should "cache computed lead cost" in {
+    val pencil = new Pencil(maxSharpness=1000, dullPoint = 0)
+    val clazz = classOf[Pencil]
+    val field = clazz.getDeclaredField("leadCostCache")
+    field.setAccessible(true)
+    val cache = field.get(pencil).asInstanceOf[mutable.Map[Char, Int]]
+    cache('象') = 0
+    assert(pencil.write("象") == "象")
+    assert(pencil.sharpness == 1000)
+  }
+
+  // TODO: test lead cost computation?
+  // I sorta TDDd that feature, by running the same code as a Groovy script and counting pixels in an image editor to verify
 }

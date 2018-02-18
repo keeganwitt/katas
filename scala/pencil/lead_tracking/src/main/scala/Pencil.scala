@@ -1,50 +1,113 @@
-class Pencil(val initialSharpness: Int = 10000, val dullPoint: Int = 1000, val maxResharpenings: Int = 10) {
-  var sharpness: Int = initialSharpness
-  var timesResharpened: Int = 0
+import java.awt.{Color, Font, FontMetrics}
+import java.awt.image.BufferedImage
 
-  if (initialSharpness < 0 || dullPoint < 0 || maxResharpenings < 0)
-    throw new IllegalArgumentException("Initial sharpness, dull point, and max resharpenings must not be negative")
+import scala.collection.mutable
 
-  object Pencil {
-    val WEAR = Map('@' -> 512, 'M' -> 427, 'B' -> 406, 'W' -> 389, 'R' -> 387, 'E' -> 380, 'D' -> 356, 'N' -> 353,
-      'G' -> 328, 'H' -> 321, 'Q' -> 319, 'P' -> 310, 'Z' -> 310, 'K' -> 302, 'O' -> 302, '&' -> 293, '#' -> 289,
-      'm' -> 288, '$' -> 285, 'F' -> 280, 'S' -> 278, 'A' -> 274, 'U' -> 268, 'g' -> 267, 'w' -> 264, 'X' -> 259,
-      '8' -> 256, '%' -> 253, 'C' -> 247, '6' -> 245, '5' -> 242, '9' -> 242, '2' -> 239, 'q' -> 236, 'd' -> 235,
-      '4' -> 234, 'p' -> 229, 'T' -> 228, '0' -> 228, 'b' -> 226, 'e' -> 219, 'a' -> 212, 'V' -> 212, ']' -> 210,
-      'k' -> 209, 'h' -> 207, 'L' -> 204, '3' -> 201, 'z' -> 193, 'Y' -> 189, 'o' -> 186, '7' -> 185, 'u' -> 182,
-      'y' -> 182, 'J' -> 177, '=' -> 176, 'n' -> 175, 's' -> 174, 'x' -> 171, '[' -> 165, 't' -> 153, 'c' -> 152,
-      '{' -> 149, '}' -> 147, '?' -> 147, 'v' -> 145, 'f' -> 144, '+' -> 142, 'I' -> 140, '|' -> 135, '1' -> 126,
-      'j' -> 125, '(' -> 123, ')' -> 122, '>' -> 116, '<' -> 115, 'l' -> 105, '!' -> 105, '^' -> 97, 'i' -> 93,
-      'r' -> 93, '_' -> 81, '/' -> 77, '\\' -> 77, '"' -> 76, '*' -> 58, '-' -> 48, ';' -> 48, ':' -> 40, '\'' -> 34,
-      ',' -> 28, '.' -> 20)
+class Pencil(val maxSharpness: Int = 10000, val dullPoint: Int = 1000, val maxResharpenings: Int = 10) {
+  private[this] var _sharpness: Int = maxSharpness
+  private[this] var _timesResharpened: Int = 0
+  private[this] val leadCostCache: mutable.Map[Char, Int] = mutable.Map()
+
+  if (maxSharpness < 0 || dullPoint < 0 || maxResharpenings < 0)
+    throw new IllegalArgumentException("Max sharpness, dull point, and max resharpenings must not be negative")
+
+  def write(string: String): String = {
+    string.map(write).mkString
   }
 
-  def write(text: String): String = {
-    verify(text)
-    text.map(write(_)).mkString
-  }
-
-  def write(char: Character): Character = {
-    if (sharpness <= dullPoint) {
+  def write(character: Char): Char = {
+    if (_sharpness <= dullPoint) {
       ' '
     } else {
-      if (!Character.isWhitespace(char))
-        sharpness -= Pencil.WEAR(char)
-      char
+      if (!character.isWhitespace)
+        _sharpness -= findOrCalculateWear(character)
+      character
     }
   }
 
   def resharpen() {
-    if (timesResharpened <= maxResharpenings) {
-      sharpness = initialSharpness
-      timesResharpened += 1
+    if (_timesResharpened <= maxResharpenings) {
+      _sharpness = maxSharpness
+      _timesResharpened += 1
     }
   }
 
-  def verify(text: String) {
-    text.foreach { c =>
-      if (!Character.isWhitespace(c) && !Pencil.WEAR.isDefinedAt(c))
-        throw new IllegalArgumentException(s"Unknown cost for '$c'")
+  def findOrCalculateWear(character: Char): Int = {
+    leadCostCache.getOrElseUpdate(character, Pencil.calculateWear(character))
+  }
+
+  def sharpness: Int = _sharpness
+
+  def sharpness_= (value:Int)() {
+    if (value < 0)
+      throw new IllegalArgumentException("Sharpness must not be negative")
+    if (value > maxSharpness)
+      throw new IllegalArgumentException("Sharpness must not exceed max sharpness")
+    _sharpness = value
+  }
+
+  def timesResharpened: Int = _timesResharpened
+
+  def timesResharpened_= (value:Int)() {
+    if (value < 0)
+      throw new IllegalArgumentException("Times resharpened must not be negative")
+    _timesResharpened = value
+  }
+}
+
+object Pencil {
+  val FONT = new Font("Arial", Font.PLAIN, 48)
+
+  def calculateWear(character: Char): Int = {
+    val string = character.toString
+
+    val widthAndHeight = calculateWidthAndHeight(string)
+    val width = widthAndHeight._1
+    val height = widthAndHeight._2
+
+    val imageAndFontMetrics = drawImage(width, height, string)
+    val image = imageAndFontMetrics._1
+    val fontMetrics = imageAndFontMetrics._2
+
+    // uncomment below to save the image used for pixel counting
+    //    javax.imageio.ImageIO.write(image, "png", new java.io.File(s"$character.png"))
+
+    countBlackPixels(image, fontMetrics)
+  }
+
+  def calculateWidthAndHeight(string: String): (Int, Int) = {
+    val image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
+    val graphics2D = image.createGraphics()
+    graphics2D.setFont(Pencil.FONT)
+    val fontMetrics = graphics2D.getFontMetrics()
+    val width = fontMetrics.stringWidth(string)
+    val height = fontMetrics.getHeight
+    graphics2D.dispose()
+    (width, height)
+  }
+
+  def drawImage(width: Int, height: Int, string: String): (BufferedImage, FontMetrics) = {
+    // TODO: antialias the image, and count grays as fractional usage?
+    // antialiasing can be enabled with
+    // graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+    val image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+    val graphics2D = image.createGraphics()
+    graphics2D.setFont(Pencil.FONT)
+    val fontMetrics = graphics2D.getFontMetrics()
+    graphics2D.setColor(Color.BLACK)
+    graphics2D.drawString(string, 0, fontMetrics.getAscent)
+    graphics2D.dispose()
+    (image, fontMetrics)
+  }
+
+  def countBlackPixels(image: BufferedImage, fontMetrics: FontMetrics): Int = {
+    var blackPixels = 0
+    for (y <- fontMetrics.getAscent until image.getHeight()) {
+      for (x <- 0 until image.getWidth()) {
+        if (image.getRGB(x, y) == 0)
+          blackPixels += 1
+      }
     }
+    blackPixels
   }
 }
