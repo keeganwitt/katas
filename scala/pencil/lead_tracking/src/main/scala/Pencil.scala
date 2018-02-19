@@ -1,15 +1,20 @@
-import java.awt.{Color, Font, FontMetrics}
 import java.awt.image.BufferedImage
+import java.awt.{Color, Font, FontMetrics}
 
-import scala.collection.mutable
+import com.twitter.storehaus.cache.MutableLRUCache
 
 class Pencil(val maxSharpness: Int = 10000, val dullPoint: Int = 1000, val maxResharpenings: Int = 10) {
   private[this] var _sharpness: Int = maxSharpness
   private[this] var _timesResharpened: Int = 0
-  private[this] val leadCostCache: mutable.Map[Char, Int] = mutable.Map()
+  // using a LRU cache instead of a map because ideogram-based languages could grow to use a fair amount of memory (e.g. Chinese)
+  private[this] val leadCostCache = MutableLRUCache[Char, Int](500)
 
-  if (maxSharpness < 0 || dullPoint < 0 || maxResharpenings < 0)
-    throw new IllegalArgumentException("Max sharpness, dull point, and max resharpenings must not be negative")
+  if (maxSharpness < 0)
+    throw new IllegalArgumentException("Max sharpness must not be negative")
+  if (dullPoint < 0)
+    throw new IllegalArgumentException("Dull point must not be negative")
+  if (maxResharpenings < 0)
+    throw new IllegalArgumentException("Max resharpenings must not be negative")
 
   def write(string: String): String = {
     string.map(write).mkString

@@ -1,6 +1,5 @@
+import com.twitter.storehaus.cache.MutableLRUCache
 import org.scalatest.FlatSpec
-
-import scala.collection.mutable
 
 class PencilSpec extends FlatSpec {
   "Pencil" should "return spaces after reaching dull point" in {
@@ -82,8 +81,8 @@ class PencilSpec extends FlatSpec {
     val clazz = classOf[Pencil]
     val field = clazz.getDeclaredField("leadCostCache")
     field.setAccessible(true)
-    val cache = field.get(pencil).asInstanceOf[mutable.Map[Char, Int]]
-    cache('象') = 0
+    val cache = field.get(pencil).asInstanceOf[MutableLRUCache[Char, Int]]
+    cache += ('象' -> 0)
     assert(pencil.write("象") == "象")
     assert(pencil.sharpness == 1000)
   }
