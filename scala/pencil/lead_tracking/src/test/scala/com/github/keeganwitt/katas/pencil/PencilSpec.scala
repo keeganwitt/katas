@@ -1,3 +1,5 @@
+package com.github.keeganwitt.katas.pencil
+
 import com.twitter.storehaus.cache.MutableLRUCache
 import org.scalatest.FlatSpec
 

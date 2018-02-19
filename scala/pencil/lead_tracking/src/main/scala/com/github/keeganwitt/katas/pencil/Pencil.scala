@@ -1,3 +1,5 @@
+package com.github.keeganwitt.katas.pencil
+
 import java.awt.image.BufferedImage
 import java.awt.{Color, Font, FontMetrics}
 
