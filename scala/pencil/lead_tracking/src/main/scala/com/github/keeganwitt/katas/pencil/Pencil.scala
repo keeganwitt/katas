@@ -33,7 +33,7 @@ class Pencil(val maxSharpness: Int = 10000, val dullPoint: Int = 1000, val maxRe
   }
 
   def resharpen() {
-    if (_timesResharpened <= maxResharpenings) {
+    if (timesResharpened < maxResharpenings) {
       _sharpness = maxSharpness
       _timesResharpened += 1
     }
@@ -67,14 +67,8 @@ object Pencil {
 
   def calculateWear(character: Char): Int = {
     val string = character.toString
-
-    val widthAndHeight = calculateWidthAndHeight(string)
-    val width = widthAndHeight._1
-    val height = widthAndHeight._2
-
-    val imageAndFontMetrics = drawImage(width, height, string)
-    val image = imageAndFontMetrics._1
-    val fontMetrics = imageAndFontMetrics._2
+    val (width, height) = calculateWidthAndHeight(string)
+    val (image, fontMetrics)= drawImage(width, height, string)
 
     // uncomment below to save the image used for pixel counting
     //    javax.imageio.ImageIO.write(image, "png", new java.io.File(s"$character.png"))

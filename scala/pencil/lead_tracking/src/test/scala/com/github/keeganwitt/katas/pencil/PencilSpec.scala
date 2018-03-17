@@ -26,11 +26,9 @@ class PencilSpec extends FlatSpec {
 
   "Pencil" should "continue writing spaces if resharpened too many times" in {
     val pencil = new Pencil(maxSharpness=1500, dullPoint = 0, maxResharpenings = 1)
+    pencil.resharpen()
     assert(pencil.write("Here is") == "Here is")
-    pencil.resharpen()
-    assert(pencil.write("some t") == "some t")
-    pencil.resharpen()
-    assert(pencil.write("   ") == "   ")
+    assert(pencil.write("some text") == "         ")
   }
 
   "Pencil" should "reduce sharpness for a non-ASCII character" in {
@@ -40,42 +38,48 @@ class PencilSpec extends FlatSpec {
   }
 
   "Pencil" should "throw an exception if maxSharpness is negative" in {
-    assertThrows[IllegalArgumentException] {
+    val thrown = intercept[IllegalArgumentException] {
       new Pencil(maxSharpness = -1)
     }
+    assert(thrown.getMessage == "Max sharpness must not be negative")
   }
 
   "Pencil" should "throw an exception if dullPoint is negative" in {
-    assertThrows[IllegalArgumentException] {
+    val thrown = intercept[IllegalArgumentException] {
       new Pencil(dullPoint = -1)
     }
+    assert(thrown.getMessage == "Dull point must not be negative")
   }
 
   "Pencil" should "throw an exception if maxResharpenings is negative" in {
-    assertThrows[IllegalArgumentException] {
+    val thrown = intercept[IllegalArgumentException] {
       new Pencil(maxResharpenings = -1)
     }
+    assert(thrown.getMessage == "Max resharpenings must not be negative")
   }
 
   "Pencil" should "throw an exception if sharpness is negative" in {
-    assertThrows[IllegalArgumentException] {
+    val thrown = intercept[IllegalArgumentException] {
       val pencil: Pencil = new Pencil()
       pencil.sharpness = -1
     }
+    assert(thrown.getMessage == "Sharpness must not be negative")
   }
 
   "Pencil" should "throw an exception if timesResharpened is negative" in {
-    assertThrows[IllegalArgumentException] {
+    val thrown = intercept[IllegalArgumentException] {
       val pencil: Pencil = new Pencil()
       pencil.timesResharpened = -1
     }
+    assert(thrown.getMessage == "Times resharpened must not be negative")
   }
 
   "Pencil" should "throw an exception if sharpness is greater than max sharpness" in {
-    assertThrows[IllegalArgumentException] {
+    val thrown = intercept[IllegalArgumentException] {
       val pencil: Pencil = new Pencil(maxSharpness = 0)
       pencil.sharpness = 1
     }
+    assert(thrown.getMessage == "Sharpness must not exceed max sharpness")
   }
 
   "Pencil" should "cache computed lead cost" in {
