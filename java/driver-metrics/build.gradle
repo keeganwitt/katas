@@ -1,0 +1,28 @@
+plugins {
+    id "java"
+    id "application"
+    id "io.freefair.lombok" version "3.1.4"
+    id "com.github.johnrengelman.shadow" version "5.0.0"
+}
+
+group = "com.keeganwitt.katas"
+version = "1.0.0-SNAPSHOT"
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+application {
+    mainClassName = "com.github.keeganwitt.katas.drivers.Main"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "info.picocli:picocli:3.9.5"
+    implementation "org.apache.logging.log4j:log4j-core:2.11.2"
+
+    testImplementation "junit:junit:4.12"
+    implementation "com.google.guava:guava:27.1-jre"
+}
