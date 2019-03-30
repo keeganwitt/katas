@@ -41,21 +41,21 @@ class PencilSpec extends FlatSpec {
     val thrown = intercept[IllegalArgumentException] {
       new Pencil(maxSharpness = -1)
     }
-    assert(thrown.getMessage == "Max sharpness must not be negative")
+    assert(thrown.getMessage == "requirement failed: Max sharpness must not be negative")
   }
 
   "Pencil" should "throw an exception if dullPoint is negative" in {
     val thrown = intercept[IllegalArgumentException] {
       new Pencil(dullPoint = -1)
     }
-    assert(thrown.getMessage == "Dull point must not be negative")
+    assert(thrown.getMessage == "requirement failed: Dull point must not be negative")
   }
 
   "Pencil" should "throw an exception if maxResharpenings is negative" in {
     val thrown = intercept[IllegalArgumentException] {
       new Pencil(maxResharpenings = -1)
     }
-    assert(thrown.getMessage == "Max resharpenings must not be negative")
+    assert(thrown.getMessage == "requirement failed: Max resharpenings must not be negative")
   }
 
   "Pencil" should "throw an exception if sharpness is negative" in {

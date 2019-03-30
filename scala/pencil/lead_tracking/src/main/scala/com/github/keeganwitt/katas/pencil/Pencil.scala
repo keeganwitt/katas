@@ -11,12 +11,9 @@ class Pencil(val maxSharpness: Int = 10000, val dullPoint: Int = 1000, val maxRe
   // using a LRU cache instead of a map because ideogram-based languages could grow to use a fair amount of memory (e.g. Chinese)
   private[this] val leadCostCache = MutableLRUCache[Char, Int](500)
 
-  if (maxSharpness < 0)
-    throw new IllegalArgumentException("Max sharpness must not be negative")
-  if (dullPoint < 0)
-    throw new IllegalArgumentException("Dull point must not be negative")
-  if (maxResharpenings < 0)
-    throw new IllegalArgumentException("Max resharpenings must not be negative")
+  require(maxSharpness >= 0, "Max sharpness must not be negative")
+  require(dullPoint >= 0, "Dull point must not be negative")
+  require(maxResharpenings >= 0, "Max resharpenings must not be negative")
 
   def write(string: String): String = {
     string.map(write).mkString
