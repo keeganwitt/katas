@@ -1,0 +1,27 @@
+sourceSets {
+    sql.resources {
+        srcDir file("${rootDir}/sql")
+    }
+}
+
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-data-rest"
+    implementation "org.springframework.boot:spring-boot-starter-security"
+//    implementation "org.springframework.data:spring-data-rest-hal-browser"
+    implementation "org.apache.logging.log4j:log4j-slf4j-impl:2.11.2"
+
+    runtimeOnly "mysql:mysql-connector-java"
+
+    testImplementation "junit:junit:4.12"
+
+    integrationTestImplementation "org.springframework.boot:spring-boot-starter-test"
+    integrationTestImplementation "org.springframework.security:spring-security-test"
+    integrationTestImplementation "com.wix:wix-embedded-mysql:4.2.0"
+    integrationTestImplementation "com.google.guava:guava:27.0.1-jre"
+    integrationTestImplementation "javax.json:javax.json-api:1.1.4"
+    integrationTestImplementation "org.glassfish:javax.json:1.1.4"
+    integrationTestImplementation configurations.testImplementation
+    integrationTestImplementation files(sourceSets.sql.resources.srcDirs)
+}

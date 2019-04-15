@@ -1,0 +1,3 @@
+rootProject.name = "link-organizer"
+
+include "api", "ui"

@@ -1,0 +1,34 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Tags</title>
+    <style>
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color:#f5f5f5;
+        }
+    </style>
+</head>
+
+<body>
+<table>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Edit</th>
+    <th>Delete</th>
+    <tr th:each="tag: ${tags}">
+        <td th:text="${tag.name}"></td>
+        <td th:text="${tag.description}"></td>
+        <p th:text="${#strings.substringAfter(name,prefix)}"></p>
+        <td><a th:href="@{'/tags/edit/' + ${#strings.substringAfter(tag.getId(),'/tags/')}}">#</a></td>
+        <td><a th:href="@{'/tags/delete/' + ${#strings.substringAfter(tag.getId(),'/tags/')}}">X</a></td>
+    </tr>
+</table>
+<a href="/tags/add">Add tag</a>
+</body>
+
+</html>

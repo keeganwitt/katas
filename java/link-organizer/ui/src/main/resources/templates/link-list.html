@@ -1,0 +1,31 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Links</title>
+    <style>
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color:#f5f5f5;
+        }
+    </style>
+</head>
+
+<body>
+<table>
+    <th>URL</th>
+    <th>Tags</th>
+    <th>Delete</th>
+    <tr th:each="link: ${links}">
+        <td th:text="${link.get('url')}"></td>
+        <td th:text="${link.get('tags')}"></td>
+        <td><a th:href="@{'/links/delete/' + ${link.get('id')}}">X</a></td>
+    </tr>
+</table>
+<a href="/links/add">Add link</a>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+plugins {
+    id "org.springframework.boot" version "2.1.4.RELEASE" apply false
+    id "org.unbroken-dome.test-sets" version "2.1.1" apply false
+    id "io.freefair.lombok" version "3.1.4" apply false
+}
+
+allprojects {
+    group "com.github.keeganwitt.katas"
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: "java"
+    apply plugin: "org.unbroken-dome.test-sets"
+    apply plugin: "io.freefair.lombok"
+    apply plugin: "org.springframework.boot"
+    apply plugin: "io.spring.dependency-management"
+
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    tasks.withType(JavaCompile) {
+        it.options.compilerArgs.with {
+            add "-Xlint:all"
+            add "-Xlint:-processing"
+        }
+    }
+
+    testSets {
+        integrationTest { dirName = "it" }
+    }
+
+//    check.dependsOn integrationTest
+
+    configurations {
+        all*.exclude(group: 'org.springframework.boot', module: 'spring-boot-starter-logging')
+    }
+}
